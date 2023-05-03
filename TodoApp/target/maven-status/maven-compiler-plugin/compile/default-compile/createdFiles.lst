@@ -1,0 +1,4 @@
+model/tasks.class
+model/Project.class
+com/easyapp/todoapp/TodoApp.class
+util/ConnectionFactory.class
