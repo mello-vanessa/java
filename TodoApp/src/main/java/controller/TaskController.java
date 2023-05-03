@@ -135,6 +135,7 @@ public class TaskController {
             throw new SQLException("Erro ao buscar a tarefa."+e.getMessage(), e);
         }
         finally{
+            ConnectionFactory.closeConnection(conexao, declaracao);
         }
                 
         return null;
