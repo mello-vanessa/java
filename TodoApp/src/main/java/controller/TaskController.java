@@ -119,16 +119,34 @@ public class TaskController {
         //Entao precisamos ter uma classe que represente este retorno.
         ResultSet retornoBanco = null;        
         //O método retorna uma estrutura de dados do tipo Lista da classe Task
-        List<Task> tarefaRetornada = new ArrayList<>();
+        List<Task> listaDeTarefas = new ArrayList<>();
         
         try{
             conexao = ConnectionFactory.getConnection();
             declaracao = conexao.prepareStatement(sql);
             declaracao.setInt(1, idProject);
             //executa a query e retorna um obj resultset
+            // entao dentro do retonroBanco, tem os dados que correspondem a uma tarefa, 
+            // que eu puxei no banco
             retornoBanco = declaracao.executeQuery();
-            //Enquanto tiver retornando coisos no banco
+            //Enquanto tiver retornando coisos no banco, enquanto houver o próximo
             while(retornoBanco.next()){
+                // cria uma nova task
+                Task tarefa = new Task();
+                //povoar o que tem no banco de dados na tarefa
+                //eu uso o método para setar o id setando com o retorno do banco
+                //usando o método getInt com o nome da coluna do banco id
+                tarefa.setId(retornoBanco.getInt("id"));
+                tarefa.setIdProject(retornoBanco.getInt("idProject"));
+                tarefa.setName(retornoBanco.getString("name"));
+                tarefa.setDescription(retornoBanco.getString("description"));
+                tarefa.setIsCompleted(retornoBanco.getBoolean("completed"));
+                tarefa.setNotes(retornoBanco.getString("notes"));
+                tarefa.setDeadline(retornoBanco.getDate("deadline"));
+                tarefa.setCreatedAt(retornoBanco.getDate("createdAt"));
+                tarefa.setUpdatedAt(retornoBanco.getDate("updatedAt"));                
+                //Agora colocar esta tarefa dentro da minha lista de tarefas
+                listaDeTarefas.add(tarefa);
             }
             
         } catch(SQLException e){
