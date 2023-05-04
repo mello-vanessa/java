@@ -119,6 +119,7 @@ public class TaskController {
         //Entao precisamos ter uma classe que represente este retorno.
         ResultSet retornoBanco = null;        
         //O método retorna uma estrutura de dados do tipo Lista da classe Task
+        //Lista de tarefas que será devolvida quando a chamada do método acontecer
         List<Task> listaDeTarefas = new ArrayList<>();
         
         try{
