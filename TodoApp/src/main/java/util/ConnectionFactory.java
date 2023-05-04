@@ -3,6 +3,7 @@ package util;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class ConnectionFactory {
@@ -55,5 +56,19 @@ public class ConnectionFactory {
             throw new RuntimeException("Erro no fechamento.");
         }
     }
-
+    public static void closeConnection(Connection conexao, PreparedStatement declaracao, ResultSet resultadoBanco){
+        try{
+            if(conexao != null){
+                conexao.close();
+            }
+            if(declaracao != null){
+                declaracao.close();
+            }
+            if(resultadoBanco != null){
+                resultadoBanco.close();
+            }
+        } catch(SQLException ex){
+            throw new RuntimeException("Erro no fechamento.");
+        }
+    }
 }
