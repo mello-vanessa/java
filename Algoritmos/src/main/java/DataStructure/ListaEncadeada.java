@@ -33,10 +33,35 @@ public class ListaEncadeada {
         tamanhoLista++;
     }
     
+    public Integer Procurar(int valor){
+        No noAtual = cabeca;
+        while(noAtual != null){
+            if(noAtual.valor == valor){
+                return noAtual.valor;
+            }
+            noAtual = noAtual.ponteiroProximo;
+        }
+        return null;
+    }
+    
+    public void Remover(int valor){
+        No nodeAnterior = cabeca;
+        No nodeAtual = cabeca.ponteiroProximo;
+        
+        while(nodeAtual != null){
+            if(nodeAtual.valor == valor){
+                nodeAnterior.ponteiroProximo = nodeAtual.ponteiroProximo;
+                return;
+            }
+            nodeAnterior = nodeAtual;
+            nodeAtual = nodeAtual.ponteiroProximo;
+        }
+    }
+    
     public void imprimir(){
         No noAtual = cabeca;
         while(noAtual != null){
-            System.out.println(noAtual.valor+" ");
+            System.out.print(noAtual.valor+" ");
             noAtual = noAtual.ponteiroProximo;
         }
     }
@@ -51,6 +76,9 @@ public class ListaEncadeada {
         lista.adicionar(2);
         lista.adicionar(3);
         lista.imprimir();
-        lista.getTamanhoLista();        
+        lista.getTamanhoLista(); 
+        System.out.println(lista.Procurar(9));
+        lista.Remover(2);
+        lista.imprimir();
     }
 }

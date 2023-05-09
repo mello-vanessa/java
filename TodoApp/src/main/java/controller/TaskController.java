@@ -12,20 +12,17 @@ import util.ConnectionFactory;
 public class TaskController {
     
     public void save(Task tarefa){
-        String sql = " INSERT INTO tasks (idProject,"
-                + "name,"
-                + "description,"
-                + "completed,"
-                + "notes,"
-                + "deadline,"
-                + "createdAt,"
-                + "updatedAt) values (?, ?, ?, ?, ?, ?, ?, ?)";
+        //concatenar para legibilidade gera custos na memória
+        String strSql = "INSERT INTO tasks (idProject, name, description, completed, notes, deadline, createdAt, updatedAt) values (?, ?, ?, ?, ?, ?, ?, ?)";
         Connection conexao = null;
         PreparedStatement declaracao = null;
         
         try{
+            //Estabelecer conexão com BD
             conexao = ConnectionFactory.getConnection();
-            declaracao = conexao.prepareStatement(sql);
+            //Prepara a Query
+            declaracao = conexao.prepareStatement(strSql);
+            //Seta os valores na query preparada
             declaracao.setInt(1, tarefa.getIdProject());
             declaracao.setString(2, tarefa.getName());
             declaracao.setString(3, tarefa.getDescription());
@@ -37,6 +34,7 @@ public class TaskController {
             declaracao.setDate(6, new java.sql.Date(tarefa.getDeadline().getTime()));
             declaracao.setDate(7, new java.sql.Date(tarefa.getCreatedAt().getTime()));
             declaracao.setDate(8, new java.sql.Date(tarefa.getUpdatedAt().getTime()));
+            //Executar a query
             declaracao.execute();
             
         }catch(SQLException e){
@@ -48,30 +46,23 @@ public class TaskController {
     }
     
     public void update(Task tarefa) throws SQLException{
-        String sql = "UPDATE tasks SET idProject = ?"
-                + " name = ?"
-                + " description = ?"
-                + " completed = ?"
-                + " notes = ?"
-                + " deadline = ?"
-                + " createdAt = ?"
-                + " updatedAt = ?"
-                + "WHERE id = ?";
+        String strSql = "UPDATE tasks SET idProject = ? name = ? description = ? completed = ? notes = ? deadline = ? createdAt = ? updatedAt = ? WHERE id = ?";
         
         Connection conexao = null;
         PreparedStatement declaracao = null;
         
         try{
             conexao = ConnectionFactory.getConnection();
-            declaracao = conexao.prepareStatement(sql);
-            declaracao.setString(1, tarefa.getName());
-            declaracao.setString(2, tarefa.getDescription());
-            declaracao.setBoolean(3, tarefa.isCompleted());
-            declaracao.setString(4, tarefa.getNotes());
-            declaracao.setDate(5, new java.sql.Date(tarefa.getDeadline().getTime()));
-            declaracao.setDate(6, new java.sql.Date(tarefa.getCreatedAt().getTime()));
-            declaracao.setDate(7, new java.sql.Date(tarefa.getUpdatedAt().getTime()));
-            declaracao.setInt(8, tarefa.getId());
+            declaracao = conexao.prepareStatement(strSql);
+            declaracao.setInt(1, tarefa.getIdProject());
+            declaracao.setString(2, tarefa.getName());
+            declaracao.setString(3, tarefa.getDescription());
+            declaracao.setBoolean(4, tarefa.isCompleted());
+            declaracao.setString(5, tarefa.getNotes());
+            declaracao.setDate(6, new java.sql.Date(tarefa.getDeadline().getTime()));
+            declaracao.setDate(7, new java.sql.Date(tarefa.getCreatedAt().getTime()));
+            declaracao.setDate(8, new java.sql.Date(tarefa.getUpdatedAt().getTime()));
+            declaracao.setInt(9, tarefa.getId());
             declaracao.execute();
         } catch(SQLException e){
             throw new SQLException("Erro ao alterar a tarefa "+ e.getMessage(), e); 
@@ -83,7 +74,7 @@ public class TaskController {
     }
     
     public void removeById(int taskId) throws SQLException{
-        String sql = "DELETE FROM tasks WHERE id = ?";
+        String strSql = "DELETE FROM tasks WHERE id = ?";
         Connection conexao = null;
         //preparar o sql, para evitar sql injection
         PreparedStatement declaracao = null;
@@ -92,7 +83,7 @@ public class TaskController {
             //pede conexao
             conexao = ConnectionFactory.getConnection();
             //prepara o sql
-            declaracao = conexao.prepareStatement(sql);
+            declaracao = conexao.prepareStatement(strSql);
             //quero mudar a primeira interrogação, no delete from... na parte do id.
             // se o parametro taskid = 34
             //vai ficar DELETE FROM tasks WHERE id = 34
@@ -125,12 +116,14 @@ public class TaskController {
         try{
             conexao = ConnectionFactory.getConnection();
             declaracao = conexao.prepareStatement(sql);
+            //Setando o valor do filtro de busca
             declaracao.setInt(1, idProject);
             //executa a query e retorna um obj resultset
             // entao dentro do retonroBanco, tem os dados que correspondem a uma tarefa, 
             // que eu puxei no banco
+            //valor retornado na execução da query
             retornoBanco = declaracao.executeQuery();
-            //Enquanto tiver retornando coisos no banco, enquanto houver o próximo
+            //Enquanto houver valores a serem percorridos
             while(retornoBanco.next()){
                 // cria uma nova task
                 Task tarefa = new Task();
