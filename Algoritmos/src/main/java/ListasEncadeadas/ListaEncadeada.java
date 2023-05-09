@@ -1,4 +1,4 @@
-package DataStructure;
+package ListasEncadeadas;
 
 // Para ter uma lista de nós encadeados, preciso de um nó inicial e do tamanho 
 // inicial da lista
@@ -44,18 +44,25 @@ public class ListaEncadeada {
         return null;
     }
     
-    public void Remover(int valor){
+    public boolean Remover(int valor){
+        /*
+        no anterior  no atual  no atual.proximo
+        | |  x |  -> | | x | -> | | x |
+        */
         No nodeAnterior = cabeca;
         No nodeAtual = cabeca.ponteiroProximo;
         
         while(nodeAtual != null){
             if(nodeAtual.valor == valor){
+                //ponteiro do anterior para de apontar para o atual e 
+                // vai para o atual.proximo, apagando a referência do atual
                 nodeAnterior.ponteiroProximo = nodeAtual.ponteiroProximo;
-                return;
+                return true;
             }
             nodeAnterior = nodeAtual;
             nodeAtual = nodeAtual.ponteiroProximo;
         }
+        return false;
     }
     
     public void imprimir(){
@@ -68,17 +75,5 @@ public class ListaEncadeada {
     
     public int getTamanhoLista(){
         return this.tamanhoLista;
-    }
-    
-    public static void main(String[] args) {
-        ListaEncadeada lista = new ListaEncadeada();
-        lista.adicionar(1);
-        lista.adicionar(2);
-        lista.adicionar(3);
-        lista.imprimir();
-        lista.getTamanhoLista(); 
-        System.out.println(lista.Procurar(9));
-        lista.Remover(2);
-        lista.imprimir();
     }
 }

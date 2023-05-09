@@ -1,4 +1,4 @@
-package DataStructure;
+package ListasEncadeadas;
 
 public class No {
     //dadosDeDentroDoNo
