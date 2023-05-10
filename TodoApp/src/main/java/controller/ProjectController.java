@@ -2,7 +2,10 @@ package controller;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import model.Project;
 import util.ConnectionFactory;
 
@@ -49,5 +52,53 @@ public class ProjectController {
             ConnectionFactory.closeConnection(conexao, declaracao);
             
         }
+    }
+    public void removeById(int id) throws Exception{
+        String strSql = "DELETE FROM projects WHERE `id` = ?";
+        Connection conexao = null;
+        PreparedStatement declaracao = null;
+        
+        try{
+            conexao = ConnectionFactory.getConnection();
+            declaracao = conexao.prepareStatement(strSql);
+            declaracao.setInt(1, id);
+        } catch(SQLException ex){
+            throw new Exception("Erro ao remover o projeto.");
+        }
+        finally{
+            ConnectionFactory.closeConnection(conexao, declaracao);
+        }
+    }
+    
+    public List<Project> getAll(int id) throws Exception{
+        String strSql = "SELECT * FROM projects WHERE id = ?";
+        Connection conexao = null;
+        PreparedStatement declaracao = null;
+        ResultSet retornoDoBanco = null;
+        List<Project> listaDeProjetos = new ArrayList<>();
+        
+        try{
+           conexao = ConnectionFactory.getConnection();
+           declaracao = conexao.prepareStatement(strSql);
+           declaracao.setInt(1, id);
+           retornoDoBanco = declaracao.executeQuery();
+           
+           while(retornoDoBanco.next()){
+               Project projeto = new Project();
+               projeto.setId(retornoDoBanco.getInt("id"));
+               projeto.setNome(retornoDoBanco.getString("name"));
+               projeto.setDescription(retornoDoBanco.getString("description"));
+               projeto.setCreatedAt(retornoDoBanco.getDate("createdAt"));
+               projeto.setUpdatedAt(retornoDoBanco.getDate("updatedAt"));
+               listaDeProjetos.add(projeto);
+           }
+        } catch(SQLException ex){
+            throw new Exception("Erro ao buscar a lista de projetos.");
+        }
+        finally{
+            ConnectionFactory.closeConnection(conexao, declaracao, retornoDoBanco);
+        }
+        
+        return listaDeProjetos;
     }
 }
