@@ -1,15 +1,14 @@
-package com.easyapp.todoapp;
+package todoappant;
 
 import java.sql.SQLException;
 import controller.*;
 import java.util.List;
 import model.*;
-
 /**
  *
  * @author vanessadeoliveiramello
  */
-public class TodoApp {
+public class TodoAppAnt {
 
     public static void main(String[] args) throws SQLException, Exception {
         ProjectController pc = new ProjectController();
