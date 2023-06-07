@@ -212,11 +212,15 @@ public class MainScreen extends javax.swing.JFrame {
         jPanel7.setBackground(java.awt.Color.white);
         jPanel7.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
+        jList1.setFont(new java.awt.Font("Helvetica Neue", 0, 14)); // NOI18N
         jList1.setModel(new javax.swing.AbstractListModel<String>() {
             String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
             public int getSize() { return strings.length; }
             public String getElementAt(int i) { return strings[i]; }
         });
+        jList1.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        jList1.setFixedCellHeight(20);
+        jList1.setSelectionBackground(new java.awt.Color(0, 153, 102));
         jScrollPane1.setViewportView(jList1);
 
         javax.swing.GroupLayout jPanel7Layout = new javax.swing.GroupLayout(jPanel7);

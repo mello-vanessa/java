@@ -1,4 +1,4 @@
-package todoappant;
+package todoappant2;
 
 import java.sql.SQLException;
 import controller.*;
@@ -8,7 +8,7 @@ import model.*;
  *
  * @author vanessadeoliveiramello
  */
-public class TodoAppAnt {
+public class TodoAppAnt2 {
 
     public static void main(String[] args) throws SQLException, Exception {
         ProjectController pc = new ProjectController();

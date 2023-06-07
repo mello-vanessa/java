@@ -7,7 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class ConnectionFactory {
-    public static final String DRIVER = "com.mysql.cj.jdbc.Driver";
+    //public static final String DRIVER = "com.mysql.cj.jdbc.Driver";
     public static final String URL = "jdbc:mysql://localhost:3306/todoapp";
     public static final String USER = "root";
     public static final String PASS = "";
@@ -25,11 +25,12 @@ public class ConnectionFactory {
             mantido em um bloco de inicialização estático.
             */
             //Basicamente:carrega o drive pra aplicação
-            Class.forName(DRIVER);
+            //Class.forName(DRIVER);
             //DriveManager - class do conj de dependencias do maven
             //com metodo get connection
             return DriverManager.getConnection(URL, USER, PASS);
-        }catch(ClassNotFoundException e){
+        }//catch(ClassNotFoundException e){
+        catch(Exception e){
             throw new RuntimeException("Erro na conexão ao banco de dados.", e);
         }
     }
