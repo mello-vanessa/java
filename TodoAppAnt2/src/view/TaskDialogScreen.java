@@ -183,7 +183,8 @@ public class TaskDialogScreen extends javax.swing.JDialog {
         try{
             Task t = new Task();
             //pega do construtor lá do fim do arquivo
-            t.setIdProject(p.getId());
+            //t.setIdProject(p.getId());
+            t.setIdProject(10);
             t.setName(jTextFieldName.getText());
             t.setDescription(jTextAreaDescription.getText());
             t.setNotes(jTextAreaNotes.getText());
@@ -259,7 +260,7 @@ public class TaskDialogScreen extends javax.swing.JDialog {
     private javax.swing.JTextField jTextFieldName;
     // End of variables declaration//GEN-END:variables
 
-    public void setP(Project p) {
+    public void setProject(Project p) {
         this.p = p;
     }
     

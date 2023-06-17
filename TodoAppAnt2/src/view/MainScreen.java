@@ -1,7 +1,16 @@
 package view;
 
+import controller.ProjectController;
+import controller.TaskController;
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.DefaultListModel;
+import model.Project;
 
 /**
  *
@@ -9,13 +18,17 @@ import java.awt.Font;
  */
 public class MainScreen extends javax.swing.JFrame {
 
-    /**
-     * Creates new form MainScreen
-     */
-    public MainScreen() {
+    ProjectController pc;
+    TaskController tc;
+    //Modelo do componente visual. Implementação padrão do Java Swing
+    DefaultListModel projectModel;
+    
+    public MainScreen() throws Exception {
         initComponents();
         //CHAMAR O METODO QUE EU CRIEI NO FIM
         decorarTabelaTarefas();
+        iniciaControllerDados();
+        iniciaComponentesDoModel();
     }
 
     /**
@@ -262,11 +275,6 @@ public class MainScreen extends javax.swing.JFrame {
         jPanelProjectsList.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
         jListProjects.setFont(new java.awt.Font("Helvetica Neue", 0, 14)); // NOI18N
-        jListProjects.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
-            public int getSize() { return strings.length; }
-            public String getElementAt(int i) { return strings[i]; }
-        });
         jListProjects.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         jListProjects.setFixedCellHeight(20);
         jListProjects.setSelectionBackground(new java.awt.Color(0, 153, 102));
@@ -327,11 +335,32 @@ public class MainScreen extends javax.swing.JFrame {
         ProjectDialogScreen pds = new ProjectDialogScreen(this, rootPaneCheckingEnabled);
         // e deixa essa janela visivel
         pds.setVisible(true);
+        //Recarregar sempre que eu adicionar novo projeto para já exibí-lo
+        //coloca um ouvinte que avisa qd a janela de projetos for fechada
+        pds.addWindowListener(new WindowAdapter(){
+            @Override
+            //ja é um metodo existente no java.awt.event
+            public void windowClosed(WindowEvent e){
+                try {
+                    //carrega os projetos na ProjectModel
+                    loadProjetos();
+                } catch (Exception ex) {
+                    Logger.getLogger(MainScreen.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
     }//GEN-LAST:event_jLabelProjectsAddMouseClicked
 
     private void jLabelTasksAddMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabelTasksAddMouseClicked
+        /*o parâmetro rootPaneCheckingEnabled é uma opção disponível na classe 
+        JDialog do AWT para controlar o comportamento de modalidade da janela.
+        Quando o valor de rootPaneCheckingEnabled é definido como true, indica 
+        que a janela ProjectDialogScreen será modal. Isso significa que o usuário
+        não poderá interagir com outras janelas da aplicação enquanto essa janela
+        estiver aberta.
+        */
         TaskDialogScreen tds = new TaskDialogScreen(this, rootPaneCheckingEnabled);
-        tds.setP(null);
+        tds.setProject(null);
         tds.setVisible(true);
     }//GEN-LAST:event_jLabelTasksAddMouseClicked
 
@@ -363,7 +392,11 @@ public class MainScreen extends javax.swing.JFrame {
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(() -> {
-            new MainScreen().setVisible(true);
+            try {
+                new MainScreen().setVisible(true);
+            } catch (Exception ex) {
+                Logger.getLogger(MainScreen.class.getName()).log(Level.SEVERE, null, ex);
+            }
         });
     }
 
@@ -399,5 +432,34 @@ public class MainScreen extends javax.swing.JFrame {
         //setinha de organizar colunas
         jTableTasks.setAutoCreateRowSorter(rootPaneCheckingEnabled);
     }
+    
+    public final void iniciaControllerDados(){
+        pc = new ProjectController();
+        tc = new TaskController();
+    }
+    
+    public final void iniciaComponentesDoModel() throws Exception{
+        //cria a lista e carrego o que busquei no banco de dados
+        projectModel = new DefaultListModel<>();
+        loadProjetos();
+    }
 
+    public void loadProjetos() throws Exception{
+        List<Project> projetos = pc.getAll();
+        //limpa a lista após o retorno dos dados
+        //limpa o model da classe jList para poder adicionar os projetos capturados no banco
+        projectModel.clear();
+        for(int i=0; i<projetos.size(); i++){
+            Project projeto = projetos.get(i);
+            projectModel.addElement(projeto);
+        }
+        // Vincular o projectModel com a jList
+        // Se deixa assim:
+        //DefaultListModel<Project> projectModel;
+        // entao poe assim DefaultListModel projectModel;
+        // ae fica ok isso:
+        //jListProjects.setModel(projectModel);
+        // da erro porque espera uma string mas recebe um tipo Project
+        jListProjects.setModel(projectModel);
+    }
 }
