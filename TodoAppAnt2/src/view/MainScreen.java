@@ -6,11 +6,14 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
 import model.Project;
+import model.Task;
+import util.TaskTableModel;
 
 /**
  *
@@ -21,7 +24,9 @@ public class MainScreen extends javax.swing.JFrame {
     ProjectController pc;
     TaskController tc;
     //Modelo do componente visual. Implementação padrão do Java Swing
-    DefaultListModel projectModel;
+    DefaultListModel projectsModel;
+    // Criar um obj deste model e setar isso pro jTable
+    TaskTableModel tasksModel;
     
     public MainScreen() throws Exception {
         initComponents();
@@ -40,11 +45,6 @@ public class MainScreen extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jPanelEmptyList = new javax.swing.JPanel();
-        jPanelSubPanelEmptyList = new javax.swing.JPanel();
-        jLabelEmptyListIcon = new javax.swing.JLabel();
-        jLabelEmptyListTitle = new javax.swing.JLabel();
-        jLabelEmptyListSubtitle = new javax.swing.JLabel();
         jPanelToolbar = new javax.swing.JPanel();
         jLabelTitle = new javax.swing.JLabel();
         jLabelSubtitle = new javax.swing.JLabel();
@@ -54,61 +54,17 @@ public class MainScreen extends javax.swing.JFrame {
         jPanelTasks = new javax.swing.JPanel();
         jLabelTasksTitle = new javax.swing.JLabel();
         jLabelTasksAdd = new javax.swing.JLabel();
-        jPanel6 = new javax.swing.JPanel();
+        jPanelDasTarefasCarregadas = new javax.swing.JPanel();
         jScrollPaneTasks = new javax.swing.JScrollPane();
         jTableTasks = new javax.swing.JTable();
+        jPanelEmptyList = new javax.swing.JPanel();
+        jPanelSubPanelEmptyList = new javax.swing.JPanel();
+        jLabelEmptyListIcon = new javax.swing.JLabel();
+        jLabelEmptyListTitle = new javax.swing.JLabel();
+        jLabelEmptyListSubtitle = new javax.swing.JLabel();
         jPanelProjectsList = new javax.swing.JPanel();
         jScrollPanelProjects = new javax.swing.JScrollPane();
         jListProjects = new javax.swing.JList<>();
-
-        jPanelEmptyList.setBackground(java.awt.Color.white);
-
-        jPanelSubPanelEmptyList.setBackground(java.awt.Color.white);
-
-        jLabelEmptyListIcon.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabelEmptyListIcon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/view/icons/lists.png"))); // NOI18N
-
-        jLabelEmptyListTitle.setFont(new java.awt.Font("Helvetica Neue", 1, 14)); // NOI18N
-        jLabelEmptyListTitle.setForeground(new java.awt.Color(0, 153, 102));
-        jLabelEmptyListTitle.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabelEmptyListTitle.setText("Nenhuma tarefa por aqui :)");
-
-        jLabelEmptyListSubtitle.setBackground(new java.awt.Color(254, 254, 254));
-        jLabelEmptyListSubtitle.setFont(new java.awt.Font("Helvetica Neue", 0, 12)); // NOI18N
-        jLabelEmptyListSubtitle.setForeground(new java.awt.Color(153, 153, 153));
-        jLabelEmptyListSubtitle.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabelEmptyListSubtitle.setText("Clique no botão \"+\" para adicionar uma nova tarefa");
-
-        javax.swing.GroupLayout jPanelSubPanelEmptyListLayout = new javax.swing.GroupLayout(jPanelSubPanelEmptyList);
-        jPanelSubPanelEmptyList.setLayout(jPanelSubPanelEmptyListLayout);
-        jPanelSubPanelEmptyListLayout.setHorizontalGroup(
-            jPanelSubPanelEmptyListLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jLabelEmptyListIcon, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(jLabelEmptyListSubtitle, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(jLabelEmptyListTitle, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-        );
-        jPanelSubPanelEmptyListLayout.setVerticalGroup(
-            jPanelSubPanelEmptyListLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanelSubPanelEmptyListLayout.createSequentialGroup()
-                .addGap(72, 72, 72)
-                .addComponent(jLabelEmptyListIcon)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabelEmptyListTitle)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabelEmptyListSubtitle)
-                .addContainerGap(79, Short.MAX_VALUE))
-        );
-
-        javax.swing.GroupLayout jPanelEmptyListLayout = new javax.swing.GroupLayout(jPanelEmptyList);
-        jPanelEmptyList.setLayout(jPanelEmptyListLayout);
-        jPanelEmptyListLayout.setHorizontalGroup(
-            jPanelEmptyListLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanelSubPanelEmptyList, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-        );
-        jPanelEmptyListLayout.setVerticalGroup(
-            jPanelEmptyListLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanelSubPanelEmptyList, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-        );
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setMinimumSize(new java.awt.Dimension(800, 600));
@@ -219,11 +175,13 @@ public class MainScreen extends javax.swing.JFrame {
                         .addGap(66, 66, 66))))
         );
 
-        jPanel6.setBackground(java.awt.Color.white);
-        jPanel6.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        jPanelDasTarefasCarregadas.setBackground(java.awt.Color.white);
+        jPanelDasTarefasCarregadas.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
         jTableTasks.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
                 {null, null, null, null},
                 {null, null, null, null},
                 {null, null, null, null},
@@ -251,24 +209,89 @@ public class MainScreen extends javax.swing.JFrame {
         jTableTasks.setGridColor(new java.awt.Color(204, 204, 204));
         jTableTasks.setRowHeight(50);
         jTableTasks.setSelectionBackground(new java.awt.Color(204, 255, 204));
+        jTableTasks.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         jTableTasks.setShowHorizontalLines(true);
+        jTableTasks.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jTableTasksMouseClicked(evt);
+            }
+        });
         jScrollPaneTasks.setViewportView(jTableTasks);
 
-        javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
-        jPanel6.setLayout(jPanel6Layout);
-        jPanel6Layout.setHorizontalGroup(
-            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel6Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jScrollPaneTasks)
-                .addContainerGap())
+        jPanelEmptyList.setBackground(java.awt.Color.white);
+
+        jPanelSubPanelEmptyList.setBackground(java.awt.Color.white);
+
+        jLabelEmptyListIcon.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabelEmptyListIcon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/view/icons/lists.png"))); // NOI18N
+
+        jLabelEmptyListTitle.setFont(new java.awt.Font("Helvetica Neue", 1, 14)); // NOI18N
+        jLabelEmptyListTitle.setForeground(new java.awt.Color(0, 153, 102));
+        jLabelEmptyListTitle.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabelEmptyListTitle.setText("Nenhuma tarefa por aqui :)");
+
+        jLabelEmptyListSubtitle.setBackground(new java.awt.Color(254, 254, 254));
+        jLabelEmptyListSubtitle.setFont(new java.awt.Font("Helvetica Neue", 0, 12)); // NOI18N
+        jLabelEmptyListSubtitle.setForeground(new java.awt.Color(153, 153, 153));
+        jLabelEmptyListSubtitle.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabelEmptyListSubtitle.setText("Clique no botão \"+\" para adicionar uma nova tarefa");
+
+        javax.swing.GroupLayout jPanelSubPanelEmptyListLayout = new javax.swing.GroupLayout(jPanelSubPanelEmptyList);
+        jPanelSubPanelEmptyList.setLayout(jPanelSubPanelEmptyListLayout);
+        jPanelSubPanelEmptyListLayout.setHorizontalGroup(
+            jPanelSubPanelEmptyListLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jLabelEmptyListIcon, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jLabelEmptyListSubtitle, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jLabelEmptyListTitle, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
-        jPanel6Layout.setVerticalGroup(
-            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel6Layout.createSequentialGroup()
+        jPanelSubPanelEmptyListLayout.setVerticalGroup(
+            jPanelSubPanelEmptyListLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanelSubPanelEmptyListLayout.createSequentialGroup()
+                .addGap(72, 72, 72)
+                .addComponent(jLabelEmptyListIcon)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabelEmptyListTitle)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabelEmptyListSubtitle)
+                .addContainerGap(79, Short.MAX_VALUE))
+        );
+
+        javax.swing.GroupLayout jPanelEmptyListLayout = new javax.swing.GroupLayout(jPanelEmptyList);
+        jPanelEmptyList.setLayout(jPanelEmptyListLayout);
+        jPanelEmptyListLayout.setHorizontalGroup(
+            jPanelEmptyListLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jPanelSubPanelEmptyList, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+        jPanelEmptyListLayout.setVerticalGroup(
+            jPanelEmptyListLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jPanelSubPanelEmptyList, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+
+        javax.swing.GroupLayout jPanelDasTarefasCarregadasLayout = new javax.swing.GroupLayout(jPanelDasTarefasCarregadas);
+        jPanelDasTarefasCarregadas.setLayout(jPanelDasTarefasCarregadasLayout);
+        jPanelDasTarefasCarregadasLayout.setHorizontalGroup(
+            jPanelDasTarefasCarregadasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanelDasTarefasCarregadasLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jScrollPaneTasks)
                 .addContainerGap())
+            .addGroup(jPanelDasTarefasCarregadasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanelDasTarefasCarregadasLayout.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(jPanelEmptyList, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addContainerGap()))
+        );
+        jPanelDasTarefasCarregadasLayout.setVerticalGroup(
+            jPanelDasTarefasCarregadasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanelDasTarefasCarregadasLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPaneTasks)
+                .addContainerGap())
+            .addGroup(jPanelDasTarefasCarregadasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanelDasTarefasCarregadasLayout.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(jPanelEmptyList, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addContainerGap()))
         );
 
         jPanelProjectsList.setBackground(java.awt.Color.white);
@@ -278,6 +301,11 @@ public class MainScreen extends javax.swing.JFrame {
         jListProjects.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         jListProjects.setFixedCellHeight(20);
         jListProjects.setSelectionBackground(new java.awt.Color(0, 153, 102));
+        jListProjects.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jListProjectsMouseClicked(evt);
+            }
+        });
         jScrollPanelProjects.setViewportView(jListProjects);
 
         javax.swing.GroupLayout jPanelProjectsListLayout = new javax.swing.GroupLayout(jPanelProjectsList);
@@ -310,7 +338,7 @@ public class MainScreen extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jPanelTasks, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                    .addComponent(jPanelDasTarefasCarregadas, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -322,7 +350,7 @@ public class MainScreen extends javax.swing.JFrame {
                     .addComponent(jPanelTasks, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanelDasTarefasCarregadas, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jPanelProjectsList, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
@@ -362,7 +390,59 @@ public class MainScreen extends javax.swing.JFrame {
         TaskDialogScreen tds = new TaskDialogScreen(this, rootPaneCheckingEnabled);
         tds.setProject(null);
         tds.setVisible(true);
+        tds.addWindowListener(new WindowAdapter(){
+            @Override
+            public void windowClosed(WindowEvent e){
+                try {
+                    loadTarefas(10);
+                } catch (Exception ex) {
+                    Logger.getLogger(MainScreen.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        
+        });
     }//GEN-LAST:event_jLabelTasksAddMouseClicked
+
+    // Ativei isso clicando na tabela > Eventos > Mouseclicked
+    private void jTableTasksMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTableTasksMouseClicked
+        // Baseado numa coordenada x,y, ele encontra um ponto na tabela.
+        // Pegar uma linha baseada num ponto, descobre a linha onde ocorreu este clique
+        int linhaIndex = jTableTasks.rowAtPoint(evt.getPoint());
+        // Pegar uma coluna baseada num ponto
+        int colunaIndex = jTableTasks.columnAtPoint(evt.getPoint());
+        
+        switch (colunaIndex) {
+            // Quando o evento de mouse clique ocorrer na coluna 3
+            case 3 -> {
+                //Busca todas as tarefas no nosso tablemodel e pega a de acordo com a linha
+                Task tarefa = tasksModel.getTarefas().get(linhaIndex);
+                try {
+                    tc.update(tarefa);
+                } catch (SQLException ex) {
+                    Logger.getLogger(MainScreen.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            default -> throw new AssertionError();
+        }
+    }//GEN-LAST:event_jTableTasksMouseClicked
+
+    // Events > MouseCliqued
+    private void jListProjectsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jListProjectsMouseClicked
+        // quando clica em algum projeto, tem que carregar as tarefas
+        //Retorna o indice do ítem clicado
+        int projetoIndex = jListProjects.getSelectedIndex();
+        // Buscar no meu model aquele projeto
+        // Todos meus projetos carregados, os objetos estao salvos dentro do projectsmodel
+        // como é retorno de objeto, tenho que fazer o cast de tipo Obj para tipo projeto
+        // pq defaultListModel guarda qq tipo de variavel que vira objeto
+        Project projeto = (Project) projectsModel.get(projetoIndex);
+        try {
+            // Carregar as tarefas de acordo com o projectId
+            loadTarefas(projeto.getId());
+        } catch (Exception ex) {
+            Logger.getLogger(MainScreen.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_jListProjectsMouseClicked
 
     /**
      * @param args the command line arguments
@@ -411,7 +491,7 @@ public class MainScreen extends javax.swing.JFrame {
     private javax.swing.JLabel jLabelTasksTitle;
     private javax.swing.JLabel jLabelTitle;
     private javax.swing.JList<String> jListProjects;
-    private javax.swing.JPanel jPanel6;
+    private javax.swing.JPanel jPanelDasTarefasCarregadas;
     private javax.swing.JPanel jPanelEmptyList;
     private javax.swing.JPanel jPanelProjects;
     private javax.swing.JPanel jPanelProjectsList;
@@ -440,18 +520,70 @@ public class MainScreen extends javax.swing.JFrame {
     
     public final void iniciaComponentesDoModel() throws Exception{
         //cria a lista e carrego o que busquei no banco de dados
-        projectModel = new DefaultListModel<>();
+        projectsModel = new DefaultListModel<>();
         loadProjetos();
+        tasksModel = new TaskTableModel();
+        // Agora não vai ser aquela tabelinha que criei em jTableTasks > Properties > Model
+        jTableTasks.setModel(tasksModel);
+        // Agora precisa carregar pra dentro do tasksModel as minhas tarefinhas puxadas do BD
+        // comentei pq pus la embaixo
+        //loadTarefas(0);
+        //Existe projeto carregado do banco? Se sim, força pra ele esta selecionado assim que abrir a interface
+        if(!projectsModel.isEmpty()){
+            jListProjects.setSelectedIndex(0);
+            int projectIndex = jListProjects.getSelectedIndex();
+            //pega projeto de dentro do projectmodel
+            Project project = (Project) projectsModel.get(projectIndex);
+            // ca
+            loadTarefas(project.getId());
+        }
+            
     }
+    //recebe um aorametro se tem tarefas
+    private void mostraTarefasJTable(boolean temTarefas){
+        //Foram carregadas tarefas? Elas existem? Se sim:
+        if(temTarefas){
+            // AQUI TODO ESSE IF REMOVE A MENSAGEM DE LISTA VAZIA
+            // A mensagem de lista vazia tá visivel pro usuário? Se sim...
+            if(jPanelEmptyList.isVisible()){
+                // ... eu vou esconder...
+                jPanelEmptyList.setVisible(false);
+                // ... e remover este componente do conteiner painelzinho 
+                jPanelDasTarefasCarregadas.remove(jPanelEmptyList);   
+            }
+            // Adiciona o scroll panel de tarefas no container
+            jPanelDasTarefasCarregadas.add(jScrollPaneTasks);
+            // Deixa o scroll visível
+            jScrollPaneTasks.setVisible(true);
+            // Ajusta ao tamanho do container pai
+            jScrollPaneTasks.setSize(jPanelDasTarefasCarregadas.getWidth(),jPanelDasTarefasCarregadas.getHeight());
+        }
+        // Caso não tenha tarefa, faço o processo contrário
+        else{
+            // Se o painelzinho de tarefas tá visivel
+            if(jScrollPaneTasks.isVisible()){
+                // ... eu escondo ele...
+                jScrollPaneTasks.setVisible(false);
+                // ... removo ele do container...
+                jPanelDasTarefasCarregadas.remove(jScrollPaneTasks);
+            }
+            // ... adiciono o painel com icone de lista vazia no container...
+            jPanelDasTarefasCarregadas.add(jPanelEmptyList);
+            // ... seto como visivel...
+            jPanelEmptyList.setVisible(true);
+            // ... e ajusto ao tamanho do container
+            jPanelEmptyList.setSize(jPanelDasTarefasCarregadas.getWidth(),jPanelDasTarefasCarregadas.getHeight());
+        }
+    } 
 
     public void loadProjetos() throws Exception{
         List<Project> projetos = pc.getAll();
         //limpa a lista após o retorno dos dados
         //limpa o model da classe jList para poder adicionar os projetos capturados no banco
-        projectModel.clear();
+        projectsModel.clear();
         for(int i=0; i<projetos.size(); i++){
             Project projeto = projetos.get(i);
-            projectModel.addElement(projeto);
+            projectsModel.addElement(projeto);
         }
         // Vincular o projectModel com a jList
         // Se deixa assim:
@@ -460,6 +592,12 @@ public class MainScreen extends javax.swing.JFrame {
         // ae fica ok isso:
         //jListProjects.setModel(projectModel);
         // da erro porque espera uma string mas recebe um tipo Project
-        jListProjects.setModel(projectModel);
+        jListProjects.setModel(projectsModel);
+    }
+    
+    public void loadTarefas(int idProject) throws Exception{
+        List<Task> tarefas = tc.getAll(idProject);
+        tasksModel.setTarefas(tarefas);
+        mostraTarefasJTable(!tarefas.isEmpty());
     }
 }
