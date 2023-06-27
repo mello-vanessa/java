@@ -388,13 +388,22 @@ public class MainScreen extends javax.swing.JFrame {
         estiver aberta.
         */
         TaskDialogScreen tds = new TaskDialogScreen(this, rootPaneCheckingEnabled);
-        tds.setProject(null);
+        // retornar o indice do projeto selecionado
+        int projetoIndex = jListProjects.getSelectedIndex();
+        //Pega do projectmodel pq ele q tem todos os projetos dento dele.
+        Project projeto = (Project) projectsModel.get(projetoIndex);
+        //seta o projeto na taskdialogscreen ae no metodo jLabelToolbarSaveMouseClicked puxo id do projeto
+        tds.setProject(projeto);
         tds.setVisible(true);
         tds.addWindowListener(new WindowAdapter(){
             @Override
             public void windowClosed(WindowEvent e){
                 try {
-                    loadTarefas(10);
+                    // retornar o indice do projeto selecionado
+                    int projetoIndex = jListProjects.getSelectedIndex();
+                    //Pega do projectmodel pq ele q tem todos os projetos dento dele.
+                    Project projeto = (Project) projectsModel.get(projetoIndex);
+                    loadTarefas(projeto.getId());
                 } catch (Exception ex) {
                     Logger.getLogger(MainScreen.class.getName()).log(Level.SEVERE, null, ex);
                 }

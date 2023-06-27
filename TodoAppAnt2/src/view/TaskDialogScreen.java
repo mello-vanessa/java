@@ -182,9 +182,9 @@ public class TaskDialogScreen extends javax.swing.JDialog {
     private void jLabelToolbarSaveMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabelToolbarSaveMouseClicked
         try{
             Task t = new Task();
-            //pega do construtor lá do fim do arquivo
-            //t.setIdProject(p.getId());
-            t.setIdProject(10);
+            //pega o "p" do construtor lá do fim do arquivo
+            //seta o projeto na taskdialogscreen ae no metodo jLabelToolbarSaveMouseClicked puxo id do projeto
+            t.setIdProject(p.getId());
             t.setName(jTextFieldName.getText());
             t.setDescription(jTextAreaDescription.getText());
             t.setNotes(jTextAreaNotes.getText());
