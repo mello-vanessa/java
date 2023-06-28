@@ -181,21 +181,27 @@ public class TaskDialogScreen extends javax.swing.JDialog {
 
     private void jLabelToolbarSaveMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabelToolbarSaveMouseClicked
         try{
-            Task t = new Task();
-            //pega o "p" do construtor lá do fim do arquivo
-            //seta o projeto na taskdialogscreen ae no metodo jLabelToolbarSaveMouseClicked puxo id do projeto
-            t.setIdProject(p.getId());
-            t.setName(jTextFieldName.getText());
-            t.setDescription(jTextAreaDescription.getText());
-            t.setNotes(jTextAreaNotes.getText());
-            t.setIsCompleted(false);
-            //Converter texto para data:
-            SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy");
-            Date deadline = null;
-            deadline = df.parse(jFormattedTextFieldDeadline.getText());
-            t.setDeadline(deadline);
-            tc.save(t);
-            JOptionPane.showMessageDialog(rootPane, "Tarefa salva com sucesso.");
+            if(!jTextFieldName.getText().equals("") || !jFormattedTextFieldDeadline.getText().isEmpty()){
+                Task t = new Task();
+                //pega o "p" do construtor lá do fim do arquivo
+                //seta o projeto na taskdialogscreen ae no metodo jLabelToolbarSaveMouseClicked puxo id do projeto
+                t.setIdProject(p.getId());
+                t.setName(jTextFieldName.getText());
+                t.setDescription(jTextAreaDescription.getText());
+                t.setNotes(jTextAreaNotes.getText());
+                t.setIsCompleted(false);
+                //Converter texto para data:
+                SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy");
+                Date deadline = null;
+                deadline = df.parse(jFormattedTextFieldDeadline.getText());
+                t.setDeadline(deadline);
+                tc.save(t);
+                JOptionPane.showMessageDialog(rootPane, "Tarefa salva com sucesso.");
+            }
+            else{
+                JOptionPane.showMessageDialog(rootPane, "Campos"
+                        + " nome ou prazo em branco, não foi possível salvar a tarefa.");
+            }
         }catch(Exception ex){
             JOptionPane.showMessageDialog(rootPane, ex.getMessage());
         }

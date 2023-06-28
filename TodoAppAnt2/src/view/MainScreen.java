@@ -8,11 +8,14 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.function.UnaryOperator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
 import model.Project;
 import model.Task;
+import util.ButtonColumnCelRenderer;
+import util.DeadlineColumnCellRenderer;
 import util.TaskTableModel;
 
 /**
@@ -31,9 +34,10 @@ public class MainScreen extends javax.swing.JFrame {
     public MainScreen() throws Exception {
         initComponents();
         //CHAMAR O METODO QUE EU CRIEI NO FIM
-        decorarTabelaTarefas();
         iniciaControllerDados();
         iniciaComponentesDoModel();
+        // Para colorir a celula, tem que pegar os dados e depois poder colorir eles
+        decorarTabelaTarefas();
     }
 
     /**
@@ -177,6 +181,7 @@ public class MainScreen extends javax.swing.JFrame {
 
         jPanelDasTarefasCarregadas.setBackground(java.awt.Color.white);
         jPanelDasTarefasCarregadas.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        jPanelDasTarefasCarregadas.setLayout(new java.awt.BorderLayout());
 
         jTableTasks.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -217,6 +222,8 @@ public class MainScreen extends javax.swing.JFrame {
             }
         });
         jScrollPaneTasks.setViewportView(jTableTasks);
+
+        jPanelDasTarefasCarregadas.add(jScrollPaneTasks, java.awt.BorderLayout.CENTER);
 
         jPanelEmptyList.setBackground(java.awt.Color.white);
 
@@ -267,32 +274,7 @@ public class MainScreen extends javax.swing.JFrame {
             .addComponent(jPanelSubPanelEmptyList, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
-        javax.swing.GroupLayout jPanelDasTarefasCarregadasLayout = new javax.swing.GroupLayout(jPanelDasTarefasCarregadas);
-        jPanelDasTarefasCarregadas.setLayout(jPanelDasTarefasCarregadasLayout);
-        jPanelDasTarefasCarregadasLayout.setHorizontalGroup(
-            jPanelDasTarefasCarregadasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanelDasTarefasCarregadasLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jScrollPaneTasks)
-                .addContainerGap())
-            .addGroup(jPanelDasTarefasCarregadasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(jPanelDasTarefasCarregadasLayout.createSequentialGroup()
-                    .addContainerGap()
-                    .addComponent(jPanelEmptyList, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addContainerGap()))
-        );
-        jPanelDasTarefasCarregadasLayout.setVerticalGroup(
-            jPanelDasTarefasCarregadasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanelDasTarefasCarregadasLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jScrollPaneTasks)
-                .addContainerGap())
-            .addGroup(jPanelDasTarefasCarregadasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(jPanelDasTarefasCarregadasLayout.createSequentialGroup()
-                    .addContainerGap()
-                    .addComponent(jPanelEmptyList, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addContainerGap()))
-        );
+        jPanelDasTarefasCarregadas.add(jPanelEmptyList, java.awt.BorderLayout.PAGE_START);
 
         jPanelProjectsList.setBackground(java.awt.Color.white);
         jPanelProjectsList.setBorder(javax.swing.BorderFactory.createEtchedBorder());
@@ -419,17 +401,54 @@ public class MainScreen extends javax.swing.JFrame {
         int linhaIndex = jTableTasks.rowAtPoint(evt.getPoint());
         // Pegar uma coluna baseada num ponto
         int colunaIndex = jTableTasks.columnAtPoint(evt.getPoint());
+        //Busca todas as tarefas no nosso tablemodel e pega a de acordo com a linha
+        Task tarefa = tasksModel.getTarefas().get(linhaIndex);
         
         switch (colunaIndex) {
             // Quando o evento de mouse clique ocorrer na coluna 3
             case 3 -> {
-                //Busca todas as tarefas no nosso tablemodel e pega a de acordo com a linha
-                Task tarefa = tasksModel.getTarefas().get(linhaIndex);
+                // remover cod repetido
+                //Task tarefa = tasksModel.getTarefas().get(linhaIndex);
                 try {
                     tc.update(tarefa);
                 } catch (SQLException ex) {
                     Logger.getLogger(MainScreen.class.getName()).log(Level.SEVERE, null, ex);
                 }
+            }
+            // Editar
+            case 4 -> {
+            /*try {
+                tc.update(tarefa);
+                tasksModel.getTarefas().replaceAll(tarefa);
+                // Atualizar a lista de tarefas sem a tarefa excluída
+                int projetoIndex = jListProjects.getSelectedIndex();
+                Project projeto = (Project) projectsModel.get(projetoIndex);
+                loadTarefas(projeto.getId());
+            } catch (SQLException ex) {
+                Logger.getLogger(MainScreen.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (Exception ex) {
+                Logger.getLogger(MainScreen.class.getName()).log(Level.SEVERE, null, ex);
+            }*/
+
+            }
+            // Excluir
+            case 5 -> {
+                // remover cod repetido                
+                //Task tarefa = tasksModel.getTarefas().get(linhaIndex);
+                try {
+                    //Remover do banco
+                    tc.removeById(tarefa.getId());
+                    // Remover do TaskModel
+                    tasksModel.getTarefas().remove(tarefa);
+                    // Atualizar a lista de tarefas sem a tarefa excluída
+                    int projetoIndex = jListProjects.getSelectedIndex();
+                    Project projeto = (Project) projectsModel.get(projetoIndex);
+                    loadTarefas(projeto.getId());
+                } catch (SQLException ex) {
+                    Logger.getLogger(MainScreen.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (Exception ex) {
+                Logger.getLogger(MainScreen.class.getName()).log(Level.SEVERE, null, ex);
+            }
             }
             default -> throw new AssertionError();
         }
@@ -520,6 +539,11 @@ public class MainScreen extends javax.swing.JFrame {
         jTableTasks.getTableHeader().setForeground(Color.WHITE);
         //setinha de organizar colunas
         jTableTasks.setAutoCreateRowSorter(rootPaneCheckingEnabled);
+        // Pegar a segunda coluna da minha jtable, começa no 0. A coluna 2 é o prazo
+        // e digo seta o renderizador customizado, o DeadlineColumnCellRenderer
+        jTableTasks.getColumnModel().getColumn(2).setCellRenderer(new DeadlineColumnCellRenderer());
+        jTableTasks.getColumnModel().getColumn(4).setCellRenderer(new ButtonColumnCelRenderer("edit"));
+        jTableTasks.getColumnModel().getColumn(5).setCellRenderer(new ButtonColumnCelRenderer("delete"));
     }
     
     public final void iniciaControllerDados(){
