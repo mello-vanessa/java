@@ -417,9 +417,9 @@ public class MainScreen extends javax.swing.JFrame {
             }
             // Editar
             case 4 -> {
-            /*try {
+            try {
                 tc.update(tarefa);
-                tasksModel.getTarefas().replaceAll(tarefa);
+                //tasksModel.getTarefas().replaceAll(tarefa);
                 // Atualizar a lista de tarefas sem a tarefa excluída
                 int projetoIndex = jListProjects.getSelectedIndex();
                 Project projeto = (Project) projectsModel.get(projetoIndex);
@@ -428,7 +428,7 @@ public class MainScreen extends javax.swing.JFrame {
                 Logger.getLogger(MainScreen.class.getName()).log(Level.SEVERE, null, ex);
             } catch (Exception ex) {
                 Logger.getLogger(MainScreen.class.getName()).log(Level.SEVERE, null, ex);
-            }*/
+            }
 
             }
             // Excluir
