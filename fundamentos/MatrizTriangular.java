@@ -47,9 +47,9 @@ public static void main(String args[]) {
     
     for(int l=0;l<matriz.length;l++){//tamanho da linha
         for(int c=0; c<matriz[l].length;c++){//tamanho da coluna
-            if(c == l+matriz[l].length/2){//desenha a escada da esquerda pra direita
+            if(c == l+matriz[l].length/2){//desenha a escada da esquerda pra direita, somente um item
                 matriz[l][c] = "x";
-                int i = l*2; //aqui volta a escada e preenche da direita pra esquerda
+                int i = l*2; //aqui volta a escada e preenche o resto da linha
                 while(i>0){
                     matriz[l][c-i] = "x";
                     i--;
