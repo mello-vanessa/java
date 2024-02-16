@@ -24,7 +24,7 @@ l+matriz[l].length/2= 0+2, coluna 2
 l+matriz[l].length/2 = 1+2, preenche coluna 3
 l+matriz[l].length/2 = 2+2, preenche coluna 4
 
-Volta a escada preenche da direita pra esquerda
+Volta a escada preenche o que falta para ficar em formato de piramide
 matriz[l].length/2 -> 5/2 = 2
 linha 0: 0*2 --> i=0, não preenche nada, somente ficou já preenchida a l+matriz[l].length/2= 0+2, coluna 2
 linha 1: 1*2 --> i=2, l+matriz[l].length/2 = 1+2, i=2, então preenche 2 para antes da coluna 3
